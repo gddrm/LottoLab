@@ -65,3 +65,8 @@ python -m unittest discover -s tests -v
   "draws": [["2006-12-30","07"], ["2007-01-16","39"], ..., ["2026-07-16","71"]]
 }
 ```
+
+
+## เติมรางวัลย้อนหลัง
+
+Workflow ชื่อ **Backfill historical prize details** อยู่ที่ `.github/workflows/backfill-prizes.yml` และสคริปต์อยู่ที่ `scripts/backfill_prizes.py` ทั้งสองรายการต้องอยู่ใน Repository root ตาม path นี้ ไม่ใช่อยู่ภายในโฟลเดอร์โปรเจกต์ซ้อนอีกชั้น หากไม่เห็น Workflow ใน GitHub Actions ให้ตรวจว่าไฟล์ workflow ถูก commit ที่ path `.github/workflows/backfill-prizes.yml` แล้ว

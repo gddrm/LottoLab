@@ -32,9 +32,10 @@ def result_payload(value):
             "result": {
                 "date": "2026-10-05",
                 "data": {
-                    "last2": {
-                        "number": [{"round": 1, "value": value}],
-                    },
+                    "last2": {"number": [{"round": 1, "value": value}]},
+                    "first": {"number": [{"round": 1, "value": "012345"}]},
+                    "first3": {"number": [{"round": 1, "value": "008"}, {"round": 2, "value": "123"}]},
+                    "last3": {"number": [{"round": 1, "value": "007"}, {"round": 2, "value": "890"}]},
                 },
             },
         },
@@ -64,8 +65,13 @@ class UpdateDrawsTests(unittest.TestCase):
                 update_draws.main()
 
             payload = json.loads(draws_path.read_text(encoding="utf-8"))
-            self.assertIn(["2026-10-05", "08"], payload["draws"])
+            self.assertIn(["2026-10-05", "08", "012345", "008,123", "007,890"], payload["draws"])
             self.assertEqual(payload["updatedDisplay"], "5 ตุลาคม 2569")
+
+    def test_extracts_all_three_digit_prizes_and_preserves_zeroes(self):
+        payload = result_payload("08")["response"]["result"]["data"]
+        self.assertEqual(update_draws.prize_value(payload, "first3", 3, multiple=True), "008,123")
+        self.assertEqual(update_draws.prize_value(payload, "last3", 3, multiple=True), "007,890")
 
     def test_network_error_fails_the_update(self):
         with tempfile.TemporaryDirectory() as directory:

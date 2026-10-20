@@ -32,7 +32,35 @@ def thai_display(dt):
     return f"{dt.day} {THAI_MONTHS[dt.month]} {dt.year + 543}"
 
 
-def fetch_last2(dt):
+def extract_numbers(result, key, width=None):
+    """Return every number for a prize category, preserving leading zeroes."""
+    block = result.get(key) if isinstance(result, dict) else None
+    if not block:
+        return []
+    numbers = block.get("number") if isinstance(block, dict) else block
+    if numbers is None:
+        return []
+    if not isinstance(numbers, list):
+        numbers = [numbers]
+    values = []
+    for item in numbers:
+        value = item.get("value") if isinstance(item, dict) else item
+        if value is None:
+            continue
+        value = str(value).strip()
+        if value:
+            values.append(value.zfill(width) if width else value)
+    return values
+
+
+def prize_value(result, key, width=None, multiple=False):
+    values = extract_numbers(result, key, width)
+    if not values:
+        return None
+    return ",".join(values) if multiple else values[0]
+
+
+def fetch_draw(dt):
     payload = {
         "date": dt.strftime("%d"),
         "month": dt.strftime("%m"),
@@ -42,22 +70,45 @@ def fetch_last2(dt):
     resp.raise_for_status()
     data = resp.json()
 
-    # Best-effort unwrap -- adjust this block if GLO's actual response
-    # shape turns out to differ once tested for real.
-    result = data
-    for key in ("response", "result", "data"):
-        if isinstance(result, dict) and key in result:
-            result = result[key]
+    # GLO has returned the prize object at different nesting levels over time.
+    # Walk known wrappers first, then recursively locate the object containing
+    # prize categories rather than assuming one fixed response shape.
+    def find_prize_object(node, depth=0):
+        if depth > 8:
+            return None
+        if isinstance(node, dict):
+            if any(key in node for key in ("last2", "first", "first3", "front3", "last3")):
+                return node
+            for key in ("response", "result", "data", "lotteryResult"):
+                if key in node:
+                    found = find_prize_object(node[key], depth + 1)
+                    if found is not None:
+                        return found
+            for value in node.values():
+                if isinstance(value, (dict, list)):
+                    found = find_prize_object(value, depth + 1)
+                    if found is not None:
+                        return found
+        elif isinstance(node, list):
+            for value in node:
+                found = find_prize_object(value, depth + 1)
+                if found is not None:
+                    return found
+        return None
 
-    last2_block = result.get("last2") if isinstance(result, dict) else None
-    if not last2_block:
+    result = find_prize_object(data)
+    if not isinstance(result, dict):
+        print(f"No prize categories returned for {dt:%Y-%m-%d}")
         return None
-    numbers = last2_block.get("number") if isinstance(last2_block, dict) else last2_block
-    if not numbers:
+    last2 = prize_value(result, "last2", 2)
+    if last2 is None:
         return None
-    first = numbers[0]
-    value = first.get("value") if isinstance(first, dict) else first
-    return str(value).zfill(2) if value is not None else None
+    first = prize_value(result, "first", 6)
+    front3 = prize_value(result, "first3", 3, multiple=True)
+    if front3 is None:
+        front3 = prize_value(result, "front3", 3, multiple=True)
+    last3 = prize_value(result, "last3", 3, multiple=True)
+    return [dt.strftime("%Y-%m-%d"), last2, first, front3, last3]
 
 
 def recent_dates(today):
@@ -70,45 +121,51 @@ def main():
     with open(DRAWS_PATH, encoding="utf-8") as f:
         payload = json.load(f)
     draws = payload["draws"]
-    recorded_dates = {d for d, _ in draws}
     new_draws = []
+    changed_existing = False
     errors = []
 
     for draw_date in recent_dates(today):
         draw_iso = draw_date.strftime("%Y-%m-%d")
-        if draw_iso in recorded_dates:
+        existing = next((row for row in draws if row[0] == draw_iso), None)
+        if existing is not None and len(existing) >= 5 and all(existing[2:5]):
             continue
 
         try:
-            last2 = fetch_last2(draw_date)
+            draw = fetch_draw(draw_date)
         except Exception as exc:
             errors.append(f"{draw_iso}: {exc}")
             continue
 
-        if last2 is not None:
-            new_draws.append([draw_iso, last2])
+        if draw is not None:
+            if existing is not None:
+                existing[:] = draw
+                changed_existing = True
+            else:
+                new_draws.append(draw)
 
     if errors:
         for error in errors:
             print(f"Could not reach GLO API for {error}")
         sys.exit(1)
 
-    if not new_draws:
+    if not new_draws and not changed_existing:
         print("No new draws posted in the recent date window.")
         return
 
     draws.extend(new_draws)
-    draws.sort(key=lambda x: x[0])
+    draws.sort(key=lambda row: row[0])
     payload["draws"] = draws
-    latest_new_iso = max(draw_iso for draw_iso, _ in new_draws)
-    latest_new_date = datetime.strptime(latest_new_iso, "%Y-%m-%d")
-    payload["updatedDisplay"] = thai_display(latest_new_date)
+    latest_iso = max(row[0] for row in new_draws) if new_draws else max(row[0] for row in draws)
+    payload["updatedDisplay"] = thai_display(datetime.strptime(latest_iso, "%Y-%m-%d"))
 
     with open(DRAWS_PATH, "w", encoding="utf-8") as f:
         json.dump(payload, f, ensure_ascii=False, separators=(",", ":"))
 
-    for draw_iso, last2 in new_draws:
-        print(f"Added {draw_iso} -> {last2}")
+    for row in new_draws:
+        print(f"Added {row[0]} -> {row[1]}")
+    if changed_existing:
+        print("Updated missing prize fields for existing draws.")
 
 
 if __name__ == "__main__":
