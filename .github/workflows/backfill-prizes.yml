@@ -25,7 +25,7 @@ jobs:
           pip install requests
 
       - name: Run backfill
-        run: python backfill_prizes.py
+        run: python -u scripts/backfill_prizes.py
 
       - name: Commit updated prize data
         run: |
