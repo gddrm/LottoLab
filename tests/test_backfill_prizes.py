@@ -40,6 +40,18 @@ class BackfillPrizeTests(unittest.TestCase):
                 backfill_prizes.main()
             fetch.assert_not_called()
 
+    def test_zero_enriched_fails_instead_of_reporting_success(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "draws.json"
+            path.write_text(json.dumps({"draws": [["2020-01-16", "08"]]}), encoding="utf-8")
+            with (
+                patch.object(backfill_prizes, "DRAWS_PATH", path),
+                patch.object(backfill_prizes, "fetch_draw", return_value=None),
+                patch.object(backfill_prizes.time, "sleep"),
+            ):
+                with self.assertRaises(SystemExit):
+                    backfill_prizes.main()
+
 
 if __name__ == "__main__":
     unittest.main()

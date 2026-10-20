@@ -51,7 +51,9 @@ class UpdateDrawsTests(unittest.TestCase):
                 encoding="utf-8",
             )
 
+            request_years = []
             def post(_url, json, timeout):
+                request_years.append(json["year"])
                 if json["date"] == "05" and json["month"] == "10":
                     return FakeResponse(result_payload("08"))
                 return FakeResponse({"status": True, "response": None})
@@ -67,6 +69,8 @@ class UpdateDrawsTests(unittest.TestCase):
             payload = json.loads(draws_path.read_text(encoding="utf-8"))
             self.assertIn(["2026-10-05", "08", "012345", "008,123", "007,890"], payload["draws"])
             self.assertEqual(payload["updatedDisplay"], "5 ตุลาคม 2569")
+            self.assertTrue(request_years)
+            self.assertEqual(set(request_years), {"2569"})
 
     def test_extracts_all_three_digit_prizes_and_preserves_zeroes(self):
         payload = result_payload("08")["response"]["result"]["data"]

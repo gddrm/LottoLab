@@ -48,8 +48,13 @@ def main():
     if updated:
         DRAWS_PATH.write_text(json.dumps(payload, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
     print(f"Finished. Enriched {updated} draws; unavailable/failed: {failed}.")
+    if updated == 0 and failed > 0:
+        raise SystemExit(
+            "Backfill enriched zero draws. The source response did not contain usable prize data; "
+            "check the GLO API request year/response before retrying."
+        )
     if failed:
-        print("Some draws could not be enriched. Check the log and rerun the workflow later.")
+        print("Some draws could not be enriched. These dates may be unavailable from the source.")
 
 
 if __name__ == "__main__":

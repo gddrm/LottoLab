@@ -64,7 +64,7 @@ def fetch_draw(dt):
     payload = {
         "date": dt.strftime("%d"),
         "month": dt.strftime("%m"),
-        "year": dt.strftime("%Y"),
+        "year": str(dt.year + 543),  # GLO API expects Buddhist Era year
     }
     resp = requests.post(GLO_URL, json=payload, timeout=20)
     resp.raise_for_status()
@@ -98,7 +98,15 @@ def fetch_draw(dt):
 
     result = find_prize_object(data)
     if not isinstance(result, dict):
-        print(f"No prize categories returned for {dt:%Y-%m-%d}")
+        # Include a compact diagnostic without dumping a potentially large response.
+        top_keys = list(data.keys()) if isinstance(data, dict) else [type(data).__name__]
+        status = data.get("status") if isinstance(data, dict) else None
+        message = data.get("message") if isinstance(data, dict) else None
+        print(
+            f"No prize categories returned for {dt:%Y-%m-%d} "
+            f"(requested GLO year {dt.year + 543}; status={status!r}; "
+            f"message={message!r}; top_keys={top_keys})"
+        )
         return None
     last2 = prize_value(result, "last2", 2)
     if last2 is None:
