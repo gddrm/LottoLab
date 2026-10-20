@@ -1,4 +1,4 @@
-const CACHE_NAME = 'lottery-stats-v27';
+const CACHE_NAME = 'lottery-stats-v29';
 const ASSETS = [
   './',
   './index.html',
