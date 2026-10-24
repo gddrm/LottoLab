@@ -63,6 +63,7 @@ class UpdateDrawsTests(unittest.TestCase):
                 patch.object(update_draws, "DRAWS_PATH", str(draws_path)),
                 patch.object(update_draws, "bangkok_now", return_value=fake_now),
                 patch.object(update_draws.requests, "post", side_effect=post),
+                patch.object(update_draws.requests, "get", return_value=FakeResponse({"status": "error", "response": None})),
             ):
                 update_draws.main()
 
@@ -106,6 +107,26 @@ class UpdateDrawsTests(unittest.TestCase):
         result = update_draws._parse_response(payload, datetime(2010, 1, 16))
         self.assertEqual(result, ["2010-01-16", "08", "012345", None, "007,890"])
 
+    def test_parses_archive_api_response(self):
+        payload = {
+            "status": "success",
+            "response": {
+                "prizes": [{"id": "prizeFirst", "number": ["012345"]}],
+                "runningNumbers": [
+                    {"id": "runningNumberFrontThree", "number": ["008", "123"]},
+                    {"id": "runningNumberBackThree", "number": ["007", "890"]},
+                    {"id": "runningNumberBackTwo", "number": ["08"]},
+                ],
+            },
+        }
+        result = update_draws._parse_archive_response(payload, datetime(2020, 1, 16))
+        self.assertEqual(result, ["2020-01-16", "08", "012345", "008,123", "007,890"])
+
+    def test_archive_draw_id_uses_buddhist_year(self):
+        with patch.object(update_draws.requests, "get", return_value=FakeResponse({"status": "success", "response": {"prizes": [], "runningNumbers": []}})) as mocked_get:
+            update_draws.fetch_archive_draw(datetime(2026, 10, 16))
+        self.assertIn("/lotto/16102569", mocked_get.call_args.args[0])
+
     def test_network_error_fails_the_update(self):
         with tempfile.TemporaryDirectory() as directory:
             draws_path = Path(directory) / "draws.json"
@@ -118,6 +139,11 @@ class UpdateDrawsTests(unittest.TestCase):
                 patch.object(
                     update_draws.requests,
                     "post",
+                    side_effect=update_draws.requests.RequestException("offline"),
+                ),
+                patch.object(
+                    update_draws.requests,
+                    "get",
                     side_effect=update_draws.requests.RequestException("offline"),
                 ),
             ):

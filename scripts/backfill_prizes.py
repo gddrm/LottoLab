@@ -24,7 +24,7 @@ def main():
             has_required = len(row) >= 5 and bool(row[2]) and bool(row[4]) and (bool(row[3]) or not needs_front3)
             if has_required:
                 continue
-            full = fetch_draw(date)
+            full = fetch_draw(date, prefer_archive=True)
             if full and full[2] and full[4] and (full[3] or not needs_front3):
                 # Keep any already-known values if the source omits a category.
                 # The two-digit result remains the primary key and must be present.

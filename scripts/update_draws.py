@@ -9,6 +9,8 @@ import requests
 
 DRAWS_PATH = "draws.json"
 GLO_URL = "https://www.glo.or.th/api/checking/getLotteryResult"
+# Fallback archive API uses the same prize categories but a different response shape.
+ARCHIVE_URL = "https://lotto.api.rayriffy.com/lotto/{draw_id}"
 RECENT_DAYS = 7
 FRONT3_START = datetime(2015, 9, 1)
 
@@ -164,26 +166,110 @@ def _parse_response(data, dt):
     return _from_category_arrays(data, dt)
 
 
-def fetch_draw(dt):
-    """Fetch one date. Try BE year first, then CE if the response has no prizes."""
-    last_diagnostic = None
+def _parse_archive_response(data, dt):
+    """Parse the documented historical archive response used as a fallback.
+
+    Archive payloads use response.prizes[] and response.runningNumbers[] with
+    ids such as prizeFirst and runningNumberBackTwo; numbers may be strings.
+    """
+    if not isinstance(data, dict) or data.get("status") != "success":
+        return None
+    response = data.get("response")
+    if not isinstance(response, dict):
+        return None
+    prizes = response.get("prizes", [])
+    running = response.get("runningNumbers", [])
+    all_categories = []
+    if isinstance(prizes, list):
+        all_categories.extend(prizes)
+    if isinstance(running, list):
+        all_categories.extend(running)
+    normalized = {"first": [], "front3": [], "last3": [], "last2": []}
+    for item in all_categories:
+        if not isinstance(item, dict):
+            continue
+        ident = _category_id(item)
+        vals = _value_list(item, None)
+        if not vals:
+            continue
+        if "prizefirst" in ident or "รางวัลที่ 1" in ident:
+            normalized["first"].extend(vals)
+        elif "runningnumberfrontthree" in ident or "เลขหน้า 3" in ident:
+            normalized["front3"].extend(vals)
+        elif "runningnumberbackthree" in ident or "เลขท้าย 3" in ident:
+            normalized["last3"].extend(vals)
+        elif "runningnumberbacktwo" in ident or "เลขท้าย 2" in ident:
+            normalized["last2"].extend(vals)
+    if not normalized["last2"]:
+        return None
+    first = [x.zfill(6) for x in normalized["first"]]
+    front3 = [x.zfill(3) for x in normalized["front3"]]
+    last3 = [x.zfill(3) for x in normalized["last3"]]
+    last2 = [x.zfill(2) for x in normalized["last2"]]
+    if dt.replace(tzinfo=None) < FRONT3_START:
+        front3 = []
+    return [dt.strftime("%Y-%m-%d"), last2[0], first[0] if first else None,
+            ",".join(front3) if front3 else None,
+            ",".join(last3) if last3 else None]
+
+
+def fetch_archive_draw(dt):
+    """Fetch a historical draw from the public archive when GLO's API shape changes."""
+    draw_id = dt.strftime("%d%m") + str(dt.year + 543)
+    response = requests.get(ARCHIVE_URL.format(draw_id=draw_id), timeout=15)
+    response.raise_for_status()
+    return _parse_archive_response(response.json(), dt)
+
+
+def fetch_draw(dt, prefer_archive=False):
+    """Fetch a draw from GLO first, then a public archive fallback.
+
+    GLO's response wrapper has changed over time. If its response is valid JSON
+    but contains no recognized prize data, use the documented archive endpoint
+    to avoid treating an empty parse as a successful result.
+    """
+    diagnostics = []
+    # Historical backfill can prefer the paged archive to avoid spending two
+    # requests on the GLO endpoint for every old date when its response schema
+    # is currently incompatible. Daily updates continue to prefer GLO.
+    if prefer_archive:
+        try:
+            archived = fetch_archive_draw(dt)
+            if archived and archived[1]:
+                print(f"Fetched {dt:%Y-%m-%d} from historical archive.")
+                return archived
+        except (requests.RequestException, ValueError) as exc:
+            diagnostics.append({"source": "archive", "error": str(exc)[:180]})
+
     for year in (dt.year + 543, dt.year):
         request_payload = {"date": dt.strftime("%d"), "month": dt.strftime("%m"), "year": str(year)}
-        response = requests.post(GLO_URL, json=request_payload, timeout=25)
-        response.raise_for_status()
-        data = response.json()
-        parsed = _parse_response(data, dt)
-        if parsed and parsed[1]:
-            return parsed
-        last_diagnostic = {
-            "year": year,
-            "status": data.get("status") if isinstance(data, dict) else None,
-            "message": data.get("message") if isinstance(data, dict) else None,
-            "keys": list(data.keys()) if isinstance(data, dict) else [type(data).__name__],
-        }
-    print(f"No usable prize data for {dt:%Y-%m-%d}; tried BE/CE year. Diagnostic={last_diagnostic}")
-    return None
+        try:
+            response = requests.post(GLO_URL, json=request_payload, timeout=12)
+            response.raise_for_status()
+            data = response.json()
+            parsed = _parse_response(data, dt)
+            if parsed and parsed[1]:
+                return parsed
+            diagnostics.append({"source": "GLO", "year": year,
+                                "keys": list(data.keys()) if isinstance(data, dict) else [type(data).__name__]})
+        except (requests.RequestException, ValueError) as exc:
+            diagnostics.append({"source": "GLO", "year": year, "error": str(exc)[:180]})
 
+    if not prefer_archive:
+        try:
+            archived = fetch_archive_draw(dt)
+            if archived and archived[1]:
+                print(f"Fetched {dt:%Y-%m-%d} from archive fallback (GLO response had no usable prize data).")
+                return archived
+        except (requests.RequestException, ValueError) as exc:
+            diagnostics.append({"source": "archive", "error": str(exc)[:180]})
+
+    print(f"No usable prize data for {dt:%Y-%m-%d}. Diagnostics={diagnostics}")
+    # If every source attempt failed at the transport/HTTP layer, propagate an
+    # error so the scheduled workflow does not report a false successful no-op.
+    if diagnostics and all("error" in item for item in diagnostics):
+        raise requests.RequestException(f"All lottery sources failed for {dt:%Y-%m-%d}: {diagnostics}")
+    return None
 
 def recent_dates(today):
     return [today - timedelta(days=offset) for offset in range(RECENT_DAYS + 1)]
