@@ -3,21 +3,21 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>สถิติหวยเลขท้าย 2 ตัว | เครื่องมือวิเคราะห์</title>
-<meta name="description" content="ดูผลหวยย้อนหลัง 10 งวด สถิติเลขท้าย 2 ตัว 00–99 เลือกช่วงย้อนหลัง และบันทึกเลขเด่นตามวันได้">
-<link rel="canonical" href="https://ssupawat.github.io/thai-lottery-2digit-stats/">
+<title>LottoLab — รวมสถิติวิเคราะห์หวย</title>
+<meta name="description" content="LottoLab รวมสถิติและวิเคราะห์ผลหวยย้อนหลัง ทั้งรางวัลที่ 1 เลขหน้า 3 ตัว เลขท้าย 3 ตัว และเลขท้าย 2 ตัว พร้อมแดชบอร์ดสถิติที่เลือกช่วงย้อนหลังได้">
+<link rel="canonical" href="https://gddrm.github.io/LottoLab/">
 <meta name="robots" content="index, follow">
 <meta property="og:type" content="website">
-<meta property="og:site_name" content="art.">
-<meta property="og:url" content="https://ssupawat.github.io/thai-lottery-2digit-stats/">
-<meta property="og:title" content="2 Digits — สถิติเลขท้าย 2 ตัว สลากกินแบ่งรัฐบาล">
-<meta property="og:description" content="สถิติเลขท้าย 2 ตัว สลากกินแบ่งรัฐบาล ย้อนหลังทุกงวด แตะที่เลขเพื่อดูวันที่ออกแต่ละครั้ง ใช้งานแบบออฟไลน์ได้">
-<meta property="og:image" content="https://ssupawat.github.io/thai-lottery-2digit-stats/icons/icon-512.png">
+<meta property="og:site_name" content="LottoLab">
+<meta property="og:url" content="https://gddrm.github.io/LottoLab/">
+<meta property="og:title" content="LottoLab — รวมสถิติวิเคราะห์หวย">
+<meta property="og:description" content="รวมสถิติและวิเคราะห์ผลหวยย้อนหลัง พร้อมตารางผลรางวัลและแดชบอร์ดความถี่ตัวเลข">
+<meta property="og:image" content="https://gddrm.github.io/LottoLab/icons/icon-512.png">
 <meta property="og:locale" content="th_TH">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="2 Digits — สถิติเลขท้าย 2 ตัว สลากกินแบ่งรัฐบาล">
-<meta name="twitter:description" content="สถิติเลขท้าย 2 ตัว สลากกินแบ่งรัฐบาล ย้อนหลังทุกงวด แตะที่เลขเพื่อดูวันที่ออกแต่ละครั้ง ใช้งานแบบออฟไลน์ได้">
-<meta name="twitter:image" content="https://ssupawat.github.io/thai-lottery-2digit-stats/icons/icon-512.png">
+<meta name="twitter:title" content="LottoLab — รวมสถิติวิเคราะห์หวย">
+<meta name="twitter:description" content="รวมสถิติและวิเคราะห์ผลหวยย้อนหลัง พร้อมตารางผลรางวัลและแดชบอร์ดความถี่ตัวเลข">
+<meta name="twitter:image" content="https://gddrm.github.io/LottoLab/icons/icon-512.png">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
 <link rel="icon" type="image/png" sizes="512x512" href="icons/icon-512.png">
@@ -25,20 +25,59 @@
 <meta name="theme-color" content="#FFFFFF">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="2 Digits">
+<meta name="apple-mobile-web-app-title" content="LottoLab">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap">
 <style>
 :root{--blue:#1860c9;--c1:#0594DB;--c2:#34CEE2;--c3:#96E7DF;--c4:#F4ECDA;--bg:#fff;--muted:#f7f9fc;--text:#101828;--sub:#667085;--border:#d0d5dd;--line:#eaecf0}
 *{box-sizing:border-box}html,body{margin:0;padding:0}body{font-family:'Inter','Sukhumvit Set','Leelawadee UI','Noto Sans Thai','Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}.wrap{max-width:1040px;margin:auto;padding:24px 18px 40px}header{text-align:center;padding:8px 0 22px}h1{font-size:clamp(28px,4vw,40px);line-height:1.3;margin:0;font-weight:700}.next-date{font-size:clamp(22px,3vw,32px);color:var(--blue);font-weight:600;margin-top:8px}.card{border:1px solid var(--border);border-radius:12px;background:#fff;padding:14px 16px;margin-bottom:12px}.featured{display:grid;grid-template-columns:minmax(160px,1fr) 2fr;align-items:center;gap:12px}.section-title{font-size:18px;font-weight:600;margin:0 0 10px}.featured .section-title{margin:0;font-size:20px}.featured-list{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}.featured-num{font-size:clamp(18px,3vw,28px);font-weight:600;text-align:center;padding:4px 0;color:var(--blue)}.range-row{display:flex;align-items:center;gap:14px;flex-wrap:wrap}.range-label{font-weight:600}.rangetabs,.sorttabs{display:flex;gap:4px;background:#f2f4f7;padding:3px;border-radius:8px}.rangetabs{flex:1}.tab{flex:1;border:0;background:transparent;color:var(--sub);font:inherit;font-size:14px;font-weight:600;padding:9px 12px;border-radius:6px;cursor:pointer;white-space:nowrap}.tab.active{background:white;color:var(--blue);box-shadow:0 1px 3px #10182822}.table-wrap{overflow-x:auto}table{width:100%;border-collapse:collapse;font-size:13px;min-width:520px}th,td{text-align:left;padding:10px 8px;border-bottom:1px solid var(--line)}th{font-weight:600;color:#344054}tbody tr:last-child td{border-bottom:0}.empty{text-align:center;color:var(--sub);padding:18px}.match-note,.note{font-size:12px;color:var(--sub);line-height:1.6;margin-top:8px}.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:12px 0}.stat-title{font-size:18px;margin:0 0 8px;font-weight:600}.stat-list{font-size:14px;line-height:1.8;color:var(--blue);font-weight:600;overflow-wrap:anywhere}.stat-list .count{color:var(--text);font-weight:400;margin-left:10px}.stat-list .sep{color:#98a2b3!important;font-weight:400;padding:0 2px}.more{border:0;background:none;color:var(--blue);font:inherit;font-size:12px;padding:6px 0 0;cursor:pointer}.grid-card{border:1px solid var(--line);border-radius:12px;padding:14px}.grid-controls{display:flex;justify-content:flex-end;margin-bottom:12px}.sorttabs .tab{min-width:76px}.grid{display:grid;grid-template-columns:repeat(10,minmax(0,1fr));gap:5px;max-width:620px;margin:0 auto}.cell{aspect-ratio:1;min-width:0;border:1px solid transparent;border-radius:6px;font:600 13px inherit;cursor:pointer;color:var(--blue);background:#eaf2ff}.cell[data-level="0"]{background:#fff;border:1px dashed #cbd5e1;color:#667085}.cell[data-level="1"]{background:#eaf2ff}.cell[data-level="2"]{background:#cfe3ff}.cell[data-level="3"]{background:#8cbcff}.cell[data-level="4"]{background:var(--blue);color:white}.cell.selected{outline:2px solid #101828;outline-offset:1px}.legend{display:flex;align-items:center;justify-content:flex-end;gap:5px;margin:12px auto 0;max-width:620px;font-size:12px;color:var(--sub)}.legend i{display:inline-block;width:13px;height:13px;border-radius:3px}.grid-detail{max-width:620px;margin:12px auto 0;padding:10px;border-radius:8px;background:#f4f8ff;font-size:13px;line-height:1.7;color:#344054}.freq-list{max-width:620px;margin:0 auto}.freq-row{display:grid;grid-template-columns:36px 1fr 28px;gap:10px;align-items:center;padding:7px 0;border-bottom:1px solid var(--line);font-size:13px}.bar{height:8px;border-radius:8px;background:#edf1f7;overflow:hidden}.bar span{display:block;height:100%;background:var(--blue)}.status{font-size:12px;color:var(--sub);text-align:center;margin-top:18px}.stale-note{display:none;color:#b42318;font-size:12px}.stale-note.show{display:block}footer{font-size:12px;color:var(--sub);text-align:center;margin-top:24px;line-height:1.6}[hidden]{display:none!important}
 @media(max-width:600px){.wrap{padding:16px 12px 30px}.featured{grid-template-columns:1fr;gap:6px}.featured .section-title{text-align:center}.featured-num{font-size:20px}.card{padding:12px}.range-row{gap:8px}.range-label{width:100%}.stats{grid-template-columns:1fr;gap:8px}.stat-card{padding:12px}.stat-title{font-size:16px}.grid{gap:3px}.cell{font-size:11px}.tab{padding:9px 6px;font-size:12px}}
+
+/* LottoLab visual refinement: subtle depth, soft CI gradients, Apple-inspired restraint */
+:root{--bg:#f5f8fc;--muted:#f7faff;--border:rgba(24,96,201,.13);--line:rgba(16,24,40,.075);--sub:#66758a}
+html{background:linear-gradient(180deg,#edf7ff 0,#f7fbff 360px,#f5f8fc 100%);min-height:100%}
+body{background:transparent;background-image:radial-gradient(ellipse at 8% 3%,rgba(5,148,219,.12),transparent 30%),radial-gradient(ellipse at 94% 10%,rgba(52,206,226,.13),transparent 26%),radial-gradient(ellipse at 85% 58%,rgba(150,231,223,.14),transparent 28%);background-attachment:fixed}
+.wrap{max-width:1080px;padding-top:30px}
+header{padding:14px 0 28px}
+h1{letter-spacing:-.035em;font-weight:750}
+.next-date{text-shadow:0 4px 22px rgba(24,96,201,.10)}
+.card,.grid-card{background:rgba(255,255,255,.88);border:1px solid rgba(255,255,255,.95);border-radius:18px;box-shadow:0 8px 28px rgba(28,55,90,.055),0 1px 3px rgba(28,55,90,.045);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);transition:box-shadow .2s ease,border-color .2s ease}
+.card{padding:18px 20px;margin-bottom:14px}
+.card:hover,.grid-card:hover{box-shadow:0 12px 34px rgba(28,55,90,.075),0 2px 5px rgba(28,55,90,.04);border-color:rgba(5,148,219,.22)}
+.section-title,.stat-title{letter-spacing:-.02em}
+.rangetabs,.sorttabs{background:rgba(229,238,248,.78);border:1px solid rgba(24,96,201,.06);border-radius:10px}
+.tab{border-radius:8px;transition:background .18s ease,color .18s ease,box-shadow .18s ease}
+.tab.active{box-shadow:0 2px 7px rgba(22,55,95,.09);color:var(--blue)}
+th{background:rgba(242,247,252,.82);color:#344054}
+thead th:first-child{border-radius:8px 0 0 8px}
+thead th:last-child{border-radius:0 8px 8px 0}
+td,th{padding-top:12px;padding-bottom:12px}
+tbody tr:hover td{background:rgba(5,148,219,.035)}
+.featured{background:linear-gradient(115deg,rgba(255,255,255,.96),rgba(237,248,255,.92) 58%,rgba(236,252,249,.9));border-color:rgba(5,148,219,.15)}
+.featured-num{border-radius:10px;background:linear-gradient(180deg,rgba(5,148,219,.045),rgba(52,206,226,.07));}
+.grid-card{padding:18px}
+.cell{box-shadow:inset 0 1px 0 rgba(255,255,255,.55);transition:transform .15s ease,box-shadow .15s ease}
+.cell:hover{transform:translateY(-1px);box-shadow:0 3px 9px rgba(24,96,201,.13)}
+.cell[data-level="0"]{background:rgba(255,255,255,.8)}
+.cell[data-level="1"]{background:#e5f4ff}
+.cell[data-level="2"]{background:#bde9f8}
+.cell[data-level="3"]{background:#69c8e8}
+.cell[data-level="4"]{background:linear-gradient(135deg,#1860c9,#0594DB)}
+.grid-detail{background:linear-gradient(135deg,#f0f7ff,#effcfb);border:1px solid rgba(5,148,219,.10)}
+.bar{background:#eaf0f7}.bar span{background:linear-gradient(90deg,#1860c9,#0594DB 60%,#34CEE2)}
+.note,.match-note{padding-top:2px;color:#68788e}
+.status{padding-top:4px}
+footer{max-width:700px;margin:28px auto 0}
+@media(max-width:600px){.wrap{padding-top:18px}.card{padding:14px 13px;border-radius:15px}.grid-card{padding:14px;border-radius:15px}header{padding-bottom:22px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;scroll-behavior:auto!important}}
+
 </style>
 </head>
 <body><div class="wrap">
 <header><h1>หวยงวดถัดไป</h1><div class="next-date" id="nextDrawDate">กำลังคำนวณ…</div><div class="stale-note" id="staleNote">โหลดข้อมูลไม่ได้ · กรุณาลองใหม่ภายหลัง</div></header>
 <section class="card featured"><h2 class="section-title" id="featuredTitle">เลขเด่นวัน…</h2><div class="featured-list" id="featuredNumbers"></div></section>
 <section class="card"><h2 class="section-title" id="weekdayStatsTitle">สถิติเลขเด่นย้อนหลัง 2 ปี</h2><div class="stats"><div><h3 class="stat-title">ออกบ่อยที่สุด</h3><div class="stat-list" id="weekdayHot">กำลังคำนวณ…</div></div><div><h3 class="stat-title">ออก 1 ครั้ง</h3><div class="stat-list" id="weekdayOnce">กำลังคำนวณ…</div></div><div><h3 class="stat-title">ไม่เคยออกเลย</h3><div class="stat-list" id="weekdayCold">กำลังคำนวณ…</div></div></div></section>
-<section class="card"><div class="range-row"><div class="range-label" id="recentHeading">ดูผลย้อนหลังงวดวันที่ …</div><div class="rangetabs" role="tablist" aria-label="เลือกจำนวนงวดย้อนหลัง"><button class="tab" data-range="5">5 งวด</button><button class="tab active" data-range="10">10 งวด</button><button class="tab" data-range="20">20 งวด</button></div></div><div class="table-wrap"><table><thead><tr><th>งวดวันที่</th><th>รางวัลที่ 1</th><th>เลขท้าย 2 ตัว</th><th>เลขหน้า 3 ตัว</th><th>เลขท้าย 3 ตัว</th></tr></thead><tbody id="recentDraws"></tbody></table></div><div class="note">แสดงผลหวยวันที่และเดือนเดียวกันในปีอื่น ๆ ตามจำนวนงวดที่เลือก ข้อมูลรางวัลที่ 1/เลข 3 ตัวจะแสดงเมื่อมีข้อมูลใน draws.json</div></section>
+<section class="card"><div class="range-row"><div class="range-label" id="recentHeading">ดูผลย้อนหลังงวดวันที่ …</div><div class="rangetabs" role="tablist" aria-label="เลือกจำนวนงวดย้อนหลัง"><button class="tab" data-range="5">5 งวด</button><button class="tab active" data-range="10">10 งวด</button><button class="tab" data-range="20">20 งวด</button></div></div><div class="table-wrap"><table><thead><tr><th>งวดวันที่</th><th>รางวัลที่ 1</th><th>เลขท้าย 2 ตัว</th><th>เลขหน้า 3 ตัว</th><th>เลขท้าย 3 ตัว</th></tr></thead><tbody id="recentDraws"></tbody></table></div><div class="note">แสดงผลหวยในวันที่และเดือนเดียวกันของปีก่อน ๆ ตามจำนวนงวดที่เลือก หากบางงวดไม่มีรางวัลที่ 1 หรือเลข 3 ตัว อาจเป็นเพราะข้อมูลรางวัลของงวดนั้นยังไม่มีในฐานข้อมูล</div></section>
 <section class="card"><h2 class="section-title" id="matchHeading">งวดเก่าที่ตรงกับวันและวันที่ของงวดถัดไป</h2><div class="table-wrap"><table><thead><tr><th>วันที่</th><th>รางวัลที่ 1</th><th>เลขท้าย 2 ตัว</th><th>เลขหน้า 3 ตัว</th><th>เลขท้าย 3 ตัว</th></tr></thead><tbody id="matchingDraws"></tbody></table></div><div class="match-note">แสดงเฉพาะงวดในอดีตที่ตรงทั้งวันในสัปดาห์และวันที่/เดือน ไม่ใช่การทำนายผลรางวัล</div></section>
 <div class="stats"><section class="card stat-card"><h2 class="stat-title">ออกบ่อยที่สุด</h2><div class="stat-list" id="hotNums">กำลังคำนวณ…</div></section><section class="card stat-card"><h2 class="stat-title">ออก 1 ครั้ง</h2><div class="stat-list" id="onceNums">กำลังคำนวณ…</div></section><section class="card stat-card"><h2 class="stat-title">ไม่เคยออกเลย</h2><div class="stat-list" id="coldNums">กำลังคำนวณ…</div></section></div>
 <section class="grid-card"><div class="grid-controls"><div class="sorttabs" role="tablist" aria-label="รูปแบบการแสดงผล"><button class="tab active" data-sort="map">แผนผัง</button><button class="tab" data-sort="freq">ความถี่</button></div></div><div class="grid" id="grid" aria-label="ตารางเลข 00 ถึง 99"></div><div class="freq-list" id="freqList" hidden></div><div class="legend"><span>0 ครั้ง</span><i style="background:#fff;border:1px dashed #cbd5e1"></i><i style="background:#eaf2ff"></i><i style="background:#cfe3ff"></i><i style="background:#8cbcff"></i><i style="background:#1860c9"></i><span id="legendMax">มากขึ้น</span></div><div class="grid-detail" id="gridDetail" hidden></div></section>
