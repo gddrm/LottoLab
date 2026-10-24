@@ -70,12 +70,41 @@ class UpdateDrawsTests(unittest.TestCase):
             self.assertIn(["2026-10-05", "08", "012345", "008,123", "007,890"], payload["draws"])
             self.assertEqual(payload["updatedDisplay"], "5 ตุลาคม 2569")
             self.assertTrue(request_years)
-            self.assertEqual(set(request_years), {"2569"})
+            self.assertIn("2569", request_years)
+            self.assertIn("2026", request_years)
 
     def test_extracts_all_three_digit_prizes_and_preserves_zeroes(self):
         payload = result_payload("08")["response"]["result"]["data"]
         self.assertEqual(update_draws.prize_value(payload, "first3", 3, multiple=True), "008,123")
         self.assertEqual(update_draws.prize_value(payload, "last3", 3, multiple=True), "007,890")
+
+    def test_parses_glo_prizes_and_running_numbers_arrays(self):
+        payload = {
+            "status": True,
+            "response": {"result": {"data": {
+                "prizes": [{"id": "prizeFirst", "name": "รางวัลที่ 1", "number": [{"value": "012345"}]}],
+                "runningNumbers": [
+                    {"id": "runningNumberFrontThree", "name": "เลขหน้า 3 ตัว", "number": [{"value": "008"}, {"value": "123"}]},
+                    {"id": "runningNumberBackThree", "name": "เลขท้าย 3 ตัว", "number": [{"value": "007"}, {"value": "890"}]},
+                    {"id": "runningNumberBackTwo", "name": "เลขท้าย 2 ตัว", "number": [{"value": "08"}]},
+                ],
+            }}}
+        }
+        result = update_draws._parse_response(payload, datetime(2020, 1, 16))
+        self.assertEqual(result, ["2020-01-16", "08", "012345", "008,123", "007,890"])
+
+    def test_front_three_is_not_required_before_september_2015(self):
+        payload = {
+            "response": {"result": {"data": {
+                "prizes": [{"id": "prizeFirst", "number": [{"value": "012345"}]}],
+                "runningNumbers": [
+                    {"id": "runningNumberBackThree", "number": [{"value": "007"}, {"value": "890"}]},
+                    {"id": "runningNumberBackTwo", "number": [{"value": "08"}]},
+                ],
+            }}}
+        }
+        result = update_draws._parse_response(payload, datetime(2010, 1, 16))
+        self.assertEqual(result, ["2010-01-16", "08", "012345", None, "007,890"])
 
     def test_network_error_fails_the_update(self):
         with tempfile.TemporaryDirectory() as directory:
