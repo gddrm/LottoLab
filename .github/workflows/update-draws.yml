@@ -1,0 +1,69 @@
+name: Update lottery draws
+
+# Runs daily (draw dates sometimes shift a day or two around holidays, so we
+# check every day and let the script do nothing on non-draw days).
+# After checking for new draws it also fills in missing prize details
+# (รางวัลที่ 1 / เลข 3 ตัว) for up to 40 older draws per run, newest-relevant first,
+# so draws.json heals itself without anyone clicking anything.
+on:
+  schedule:
+    - cron: '0 11 * * *'   # 11:00 UTC = 18:00 Bangkok time, daily
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: draws-data
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Run tests
+        run: python -m unittest discover -s tests -v
+
+      - name: Fetch latest draws
+        run: python -u scripts/update_draws.py
+
+      - name: Fill missing prize details (bounded)
+        if: always()
+        continue-on-error: true
+        run: python -u scripts/backfill_prizes.py --limit 40
+
+      - name: Update last-checked timestamp
+        if: always()
+        run: |
+          python3 - <<'PY'
+          import json, time
+          with open('draws.json', encoding='utf-8') as f:
+              data = json.load(f)
+          data['lastChecked'] = int(time.time() * 1000)
+          with open('draws.json', 'w', encoding='utf-8') as f:
+              json.dump(data, f, ensure_ascii=False, separators=(',', ':'))
+          PY
+
+      - name: Commit if changed
+        if: always()
+        run: |
+          git config user.name "lottery-stats-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add draws.json
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+          else
+            git commit -m "Update draws.json ($(date -u +%Y-%m-%d))"
+            git pull --rebase origin "${GITHUB_REF_NAME}"
+            git push
+          fi
