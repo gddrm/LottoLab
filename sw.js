@@ -1,4 +1,4 @@
-const CACHE_NAME = 'lottolab-design-v32';
+const CACHE_NAME = 'lottolab-design-v33';
 const ASSETS = [
   './',
   './index.html',
@@ -32,8 +32,7 @@ self.addEventListener('fetch', (event) => {
 
   const url = new URL(event.request.url);
 
-  // Cross-origin requests (e.g. the GoatCounter script and its hit beacon)
-  // go straight to the network: a cached beacon would never be counted.
+  // Cross-origin requests (e.g. Google Fonts) go straight to the network.
   if (url.origin !== self.location.origin) return;
 
   // draws.json changes daily -- go network-first so a launch with a live

@@ -1,4 +1,4 @@
-# thai-lottery-2digit-stats
+# LottoLab
 
 สถิติเลขท้าย 2 ตัว (สลากกินแบ่งรัฐบาล) แบบ PWA
 
@@ -40,10 +40,6 @@ python -m unittest discover -s tests -v
 ```
 
 เทสต์ครอบคลุมสคริปต์อัปเดตข้อมูล (ใช้ API จำลอง) ส่วนการเรียก API จริงของ GLO ต้องทดสอบผ่าน `workflow_dispatch` เพราะบางสภาพแวดล้อมเข้า `glo.or.th` ไม่ได้
-
-## สถิติผู้เข้าชม
-
-เว็บใช้ [GoatCounter](https://www.goatcounter.com/) นับจำนวนผู้เข้าชมแบบไม่ระบุตัวตน ไม่ใช้คุกกี้ และไม่ติดตามข้ามเว็บ
 
 ## ข้อมูล (`draws.json`)
 

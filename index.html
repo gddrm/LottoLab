@@ -22,7 +22,7 @@
 <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
 <link rel="icon" type="image/png" sizes="512x512" href="icons/icon-512.png">
 <link rel="apple-touch-icon" href="icons/icon-192.png">
-<meta name="theme-color" content="#FFFFFF">
+<meta name="theme-color" content="#F5F5F7">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="LottoLab">
@@ -34,9 +34,9 @@
 @media(max-width:600px){.wrap{padding:16px 12px 30px}.featured{grid-template-columns:1fr;gap:6px}.featured .section-title{text-align:center}.featured-num{font-size:20px}.card{padding:12px}.range-row{gap:8px}.range-label{width:100%}.stats{grid-template-columns:1fr;gap:8px}.stat-card{padding:12px}.stat-title{font-size:16px}.grid{gap:3px}.cell{font-size:11px}.tab{padding:9px 6px;font-size:12px}}
 
 /* LottoLab visual refinement: subtle depth, soft CI gradients, Apple-inspired restraint */
-:root{--bg:#f5f8fc;--muted:#f7faff;--border:rgba(24,96,201,.13);--line:rgba(16,24,40,.075);--sub:#66758a}
-html{background:linear-gradient(180deg,#f0f2f5 0,#f8f9fb 360px,#eceff3 100%);min-height:100%}
-body{background:transparent;background-image:radial-gradient(ellipse at 8% 3%,rgba(5,148,219,.12),transparent 30%),radial-gradient(ellipse at 94% 10%,rgba(52,206,226,.13),transparent 26%),radial-gradient(ellipse at 85% 58%,rgba(150,231,223,.14),transparent 28%);background-attachment:fixed}
+:root{--bg:#f5f5f7;--muted:#f7f7f9;--border:rgba(24,96,201,.13);--line:rgba(16,24,40,.075);--sub:#66758a}
+html{background:linear-gradient(180deg,#efeff1 0,#f8f8fa 360px,#ebebee 100%);min-height:100%}
+body{background:transparent;background-image:radial-gradient(ellipse at 8% 3%,rgba(120,128,140,.12),transparent 30%),radial-gradient(ellipse at 94% 10%,rgba(160,168,180,.14),transparent 26%),radial-gradient(ellipse at 85% 58%,rgba(190,196,206,.16),transparent 28%);background-attachment:fixed}
 .wrap{max-width:1080px;padding-top:30px}
 header{padding:14px 0 28px}
 h1{letter-spacing:-.035em;font-weight:750}
@@ -111,6 +111,5 @@ document.querySelectorAll('[data-range]').forEach(b=>b.addEventListener('click',
 async function load(){try{let r=await fetch('./draws.json');if(!r.ok)throw Error();let p=await r.json();if(!Array.isArray(p.draws)||!p.draws.length)throw Error();allDraws=p.draws;$('sourceName').textContent=p.source||'ข้อมูลผลสลากย้อนหลัง';$('lastChecked').textContent=p.lastChecked?ts(p.lastChecked):'-'}catch(e){$('staleNote').classList.add('show');allDraws=[];$('sourceName').textContent='ไม่สามารถโหลดข้อมูลได้'}render()}
 load();
 </script>
-<script data-goatcounter="https://2digits.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
 </body>
 </html>
