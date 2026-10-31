@@ -193,7 +193,11 @@ body{overflow-x:hidden;overflow-x:clip}
 .number-check-row{display:grid;grid-template-columns:110px minmax(90px,150px) minmax(220px,1fr);gap:12px;align-items:center;padding:10px 12px;border:1px solid #e5e5ea;border-radius:12px;background:#fafafa}
 .number-check-row>label{font-family:inherit;font-size:14px;font-weight:600;line-height:1.4;color:#424245}
 .number-check-input{box-sizing:border-box;width:100%;min-height:42px;font-family:inherit;font-size:17px;font-weight:600;line-height:1.2;letter-spacing:.06em}
+.number-check-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 .number-check-button{font-family:inherit;font-size:14px;font-weight:600;line-height:1.2;min-width:120px}
+.number-check-reset{border:1px solid #d2d2d7;border-radius:12px;padding:0 18px;min-height:46px;background:#fff;color:#1d1d1f;font:600 14px/1.2 inherit;cursor:pointer}
+.number-check-reset:hover{background:#f5f5f7}
+.ncr-reverse{margin-top:7px;padding-top:7px;border-top:1px solid #e5e5ea;color:#6e6e73;font-size:11px;line-height:1.5}
 .number-check-result{box-sizing:border-box;max-width:none;margin:0;padding:10px 12px;min-width:0}
 .number-check-result[hidden]{display:none}
 .ncr-score-line{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
@@ -207,7 +211,8 @@ body{overflow-x:hidden;overflow-x:clip}
  .number-check-row>label{grid-column:1/-1}
  .number-check-result{grid-column:1/-1}
  .number-check-input{width:100%;min-height:42px}
- .number-check-button{width:100%;margin-top:4px;min-height:44px}
+ .number-check-actions{display:grid;grid-template-columns:1fr 1fr}
+ .number-check-button,.number-check-reset{width:100%;margin-top:4px;min-height:44px}
 }
 </style>
 </head>
@@ -232,7 +237,7 @@ body{overflow-x:hidden;overflow-x:clip}
 
 <section class="card number-check-card" aria-labelledby="numberCheckTitle">
 <h2 class="section-title" id="numberCheckTitle">ลองตรวจคะแนนเลขที่สนใจ</h2>
-<p class="sub-note">กรอกเลข 2 หลักที่ต้องการ ระบบจะคำนวณคะแนนจากสถิติย้อนหลังชุดเดียวกับ 10 เลขเด่น</p>
+<p class="sub-note">กรอกเลข 2 หลักที่ต้องการ ระบบจะคำนวณคะแนนจากสถิติย้อนหลังชุดเดียวกับ 10 เลขเด่น พร้อมตรวจเลขสลับตำแหน่งให้อัตโนมัติ โดยแสดงคะแนนของเลขที่กรอกเป็นหลัก และแสดงคะแนนเลขสลับตำแหน่งเป็นข้อมูลประกอบเท่านั้น</p>
 <form class="number-check-form" id="numberCheckForm" novalidate>
 <div class="number-check-list">
   <div class="number-check-row"><label for="numberCheckInput1">หมายเลข 1</label><input id="numberCheckInput1" class="number-check-input" type="text" inputmode="numeric" autocomplete="off" maxlength="2" pattern="[0-9]{2}" placeholder="00–99"><div class="number-check-result" id="numberCheckResult1" aria-live="polite" hidden></div></div>
@@ -241,7 +246,7 @@ body{overflow-x:hidden;overflow-x:clip}
   <div class="number-check-row"><label for="numberCheckInput4">หมายเลข 4</label><input id="numberCheckInput4" class="number-check-input" type="text" inputmode="numeric" autocomplete="off" maxlength="2" pattern="[0-9]{2}" placeholder="00–99"><div class="number-check-result" id="numberCheckResult4" aria-live="polite" hidden></div></div>
   <div class="number-check-row"><label for="numberCheckInput5">หมายเลข 5</label><input id="numberCheckInput5" class="number-check-input" type="text" inputmode="numeric" autocomplete="off" maxlength="2" pattern="[0-9]{2}" placeholder="00–99"><div class="number-check-result" id="numberCheckResult5" aria-live="polite" hidden></div></div>
 </div>
-<button class="number-check-button" type="submit">เช็คคะแนน</button>
+<div class="number-check-actions"><button class="number-check-button" type="submit">เช็คคะแนน</button><button class="number-check-reset" type="button" id="numberCheckReset">รีเซ็ต</button></div>
 </form>
 <div class="number-check-hint" id="numberCheckHint">กรอกได้สูงสุด 5 หมายเลข แล้วกด “เช็คคะแนน” เพื่อดูผลพร้อมกัน</div>
 <p class="number-check-disclaimer">คะแนนนี้เป็นเพียงการประเมินจากรูปแบบสถิติย้อนหลัง ไม่ใช่คำแนะนำในการซื้อสลาก และไม่สามารถบอกหรือรับประกันผลรางวัลในอนาคตได้</p>
@@ -358,8 +363,9 @@ function scoreNumber(A,n){
   const {N,tens,units,cnt,first}=A;
   const maxT=Math.max(...tens)||1,maxU=Math.max(...units)||1,maxC=Math.max(...Object.values(cnt))||1;
   const a=+n[0],b=+n[1],rec=n in first?1-first[n]/N:0;
-  return {score:.5*((tens[a]/maxT+units[b]/maxU)/2)+.3*(cnt[n]/maxC)+.2*rec,
-    tensCount:tens[a],unitsCount:units[b],drawCount:cnt[n],lastIndex:first[n]};
+  const drawCount=cnt[n]||0;
+  return {score:.5*((tens[a]/maxT+units[b]/maxU)/2)+.3*(drawCount/maxC)+.2*rec,
+    tensCount:tens[a],unitsCount:units[b],drawCount,lastIndex:first[n]};
 }
 function buildPicks(A){
   const {N,tens,units,cnt,first,win}=A,maxT=Math.max(...tens)||1,maxU=Math.max(...units)||1,maxC=Math.max(...Object.values(cnt))||1;
@@ -407,7 +413,7 @@ function renderTrend(){
 }
 function evaluateEnteredNumbers(){
   const A=analyzeTrend();
-  const all=A?Object.keys(A.cnt).map(num=>({n:num,...scoreNumber(A,num)}))
+  const all=A?Array.from({length:100},(_,i)=>String(i).padStart(2,'0')).map(num=>({n:num,...scoreNumber(A,num)}))
     .sort((a,b)=>b.score-a.score||(a.lastIndex??Infinity)-(b.lastIndex??Infinity)||a.n.localeCompare(b.n)):[];
   for(let i=1;i<=5;i++){
     const n=$(`numberCheckInput${i}`).value.trim(),result=$(`numberCheckResult${i}`);
@@ -419,12 +425,22 @@ function evaluateEnteredNumbers(){
     const metric=scoreNumber(A,n),rank=all.findIndex(x=>x.n===n)+1,score=Math.round(metric.score*1000)/10;
     const freq=metric.drawCount?`เคยออก ${metric.drawCount} ครั้งใน ${A.N} งวดล่าสุดที่ใช้วิเคราะห์`:`ยังไม่พบใน ${A.N} งวดที่ใช้วิเคราะห์`;
     const last=metric.lastIndex!==undefined?` · พบล่าสุดในชุดข้อมูล พ.ศ. ${yearBE(A.win[metric.lastIndex][0])}`:'';
+    const reverse=n[1]+n[0];
+    let reverseNote='';
+    if(reverse!==n){
+      const reverseMetric=scoreNumber(A,reverse),reverseScore=(reverseMetric.score*100).toFixed(1);
+      reverseNote=`<div class="ncr-reverse">เลขสลับตำแหน่ง ${reverse} ได้ ${reverseScore} / 100 · แสดงไว้เพื่อเปรียบเทียบคะแนนเท่านั้น ไม่ได้หมายถึงโอกาสถูกรางวัลที่สูงขึ้น</div>`;
+    }
     result.hidden=false;
-    result.innerHTML=`<div class="ncr-score-line"><div class="ncr-score">${score.toFixed(1)}<span> / 100</span></div><div class="ncr-label">อันดับ ${rank} จาก 100 เลข</div></div><div class="ncr-track" role="img" aria-label="คะแนน ${score} จาก 100"><span style="width:${score}%"></span></div><div class="ncr-detail">${freq}${last}</div>`;
+    result.innerHTML=`<div class="ncr-score-line"><div class="ncr-score">${score.toFixed(1)}<span> / 100</span></div><div class="ncr-label">อันดับ ${rank} จาก 100 เลข</div></div><div class="ncr-track" role="img" aria-label="คะแนน ${score} จาก 100"><span style="width:${score}%"></span></div><div class="ncr-detail">${freq}${last}</div>${reverseNote}`;
   }
 }
 $('numberCheckForm').addEventListener('submit',e=>{
   e.preventDefault();evaluateEnteredNumbers();
+});
+$('numberCheckReset').addEventListener('click',()=>{
+  for(let i=1;i<=5;i++){ $(`numberCheckInput${i}`).value=''; const result=$(`numberCheckResult${i}`); result.hidden=true; result.innerHTML=''; }
+  $('numberCheckInput1').focus();
 });
 for(let i=1;i<=5;i++)$(`numberCheckInput${i}`).addEventListener('input',e=>{
   e.target.value=e.target.value.replace(/\D/g,'').slice(0,2);
