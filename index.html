@@ -70,6 +70,32 @@ tbody tr:hover td{background:rgba(5,148,219,.035)}
 footer{max-width:700px;margin:28px auto 0}
 @media(max-width:600px){.wrap{padding-top:18px}.card{padding:14px 13px;border-radius:15px}.grid-card{padding:14px;border-radius:15px}header{padding-bottom:22px}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;scroll-behavior:auto!important}}
+/* ===== LottoLab refinements: clearer observations and personal number score ===== */
+.tag-lead{line-height:1.65}
+.number-check-card{margin-top:4px}
+.number-check-form{display:flex;gap:9px;align-items:stretch;max-width:430px}
+.number-check-input{width:132px;min-height:46px;border:1px solid #c7cbd1;border-radius:12px;padding:0 14px;background:#f5f5f7;color:#1d1d1f;font:600 20px/1 inherit;letter-spacing:.08em;text-align:center;outline:none;transition:border-color .18s,box-shadow .18s,background .18s}
+.number-check-input:focus{border-color:#007aff;background:#fff;box-shadow:0 0 0 4px rgba(0,122,255,.13)}
+.number-check-button{border:0;border-radius:12px;padding:0 20px;min-height:46px;background:#007aff;color:#fff;font:600 14px inherit;cursor:pointer;transition:background .18s,transform .18s}
+.number-check-button:hover{background:#0067d8}
+.number-check-button:active{transform:scale(.98)}
+.number-check-hint,.number-check-disclaimer{font-size:12px;color:var(--sub);line-height:1.65;margin:9px 0 0}
+.number-check-result{margin-top:14px;padding:16px;border:1px solid #d2d2d7;border-radius:14px;background:#f5f5f7;max-width:430px}
+.number-check-result[hidden]{display:none}
+.ncr-top{display:flex;align-items:center;gap:14px}
+.ncr-number{font-size:34px;line-height:1;font-weight:700;letter-spacing:-.04em;color:#007aff;font-variant-numeric:tabular-nums}
+.ncr-score{font-size:26px;font-weight:700;color:#1d1d1f;font-variant-numeric:tabular-nums}
+.ncr-label{font-size:12px;color:var(--sub);margin-top:3px}
+.ncr-track{height:8px;background:#e1e1e6;border-radius:99px;overflow:hidden;margin:13px 0 8px}
+.ncr-track span{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#007aff,#5ac8fa)}
+.ncr-detail{font-size:13px;line-height:1.65;color:#424245}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.split-bar{overflow:visible}
+.split{position:relative;padding-top:3px}
+.split-ratio{position:absolute;left:var(--split-at);top:31px;transform:translate(-50%,-50%);z-index:2;padding:2px 7px;border-radius:7px;background:#fff;border:1px solid rgba(0,122,255,.18);color:#0066cc;font-size:11px;font-weight:700;white-space:nowrap;box-shadow:0 1px 4px rgba(0,0,0,.08);pointer-events:none}
+.split-bar{position:relative}
+@media(max-width:600px){.number-check-form{max-width:none}.number-check-input{flex:1;width:auto}.number-check-button{padding:0 17px}.split-ratio{font-size:10px;padding:1px 5px}}
+
 
 
 /* ===== แท็บ: สถิติย้อนหลัง / วิเคราะห์แนวโน้ม ===== */
@@ -176,11 +202,23 @@ body{overflow-x:hidden;overflow-x:clip}
 </div>
 <div class="view" id="viewTrend" role="tabpanel" aria-labelledby="tabTrend" hidden>
 <section class="card"><h2 class="section-title" id="trWinTitle">เลขท้าย 2 ตัว 20 งวด</h2><div class="sub-note" id="trWinSub">กำลังคำนวณ…</div><div class="draw-chips" id="trChips"></div></section>
-<section class="card"><h2 class="section-title">ข้อสังเกตหลัก</h2><div class="tag-lead">ป้ายท้ายแต่ละข้อบอกว่าเรื่องนั้น <b>“แปลกจากปกติแค่ไหน”</b> ไม่ได้บอกว่าดีหรือไม่ดี</div><div class="tag-legend"><div class="tl"><span class="obs-tag high">เด่นชัด</span><span>เจอได้ยาก (โอกาสต่ำกว่า 5% ถ้าสุ่มจริง)</span></div><div class="tl"><span class="obs-tag mid">ค่อนข้างเด่น</span><span>เจอได้บ้าง (โอกาส 5–20%)</span></div><div class="tl"><span class="obs-tag">อยู่ในเกณฑ์ปกติ</span><span>เจอได้ทั่วไปตามธรรมชาติ</span></div><div class="tl"><span class="obs-tag note">น่าสนใจ</span><span>ลักษณะเฉพาะที่พบในข้อมูลชุดนี้</span></div></div><ol class="obs-list" id="trObs"></ol></section>
+<section class="card"><h2 class="section-title">ข้อสังเกตหลัก</h2><div class="tag-lead" id="trTagLead">ป้ายท้ายแต่ละข้อบอกว่าพบลักษณะนั้นบ่อยหรือแตกต่างจากรูปแบบสุ่มแค่ไหน โดยดูจากข้อมูลย้อนหลังที่เลือก ไม่ได้บอกว่าเลขนั้นดีหรือไม่ดี</div><div class="tag-legend"><div class="tl"><span class="obs-tag high">เด่นชัด</span><span>เจอได้ยาก (โอกาสต่ำกว่า 5% ถ้าสุ่มจริง)</span></div><div class="tl"><span class="obs-tag mid">ค่อนข้างเด่น</span><span>เจอได้บ้าง (โอกาส 5–20%)</span></div><div class="tl"><span class="obs-tag">อยู่ในเกณฑ์ปกติ</span><span>เจอได้ทั่วไปตามธรรมชาติ</span></div><div class="tl"><span class="obs-tag note">น่าสนใจ</span><span>ลักษณะเฉพาะที่พบในข้อมูลชุดนี้</span></div></div><ol class="obs-list" id="trObs"></ol></section>
 <section class="card"><h2 class="section-title" id="trPickTitle">10 เลขเด่น</h2><div class="sub-note">สรุปจากสถิติย้อนหลัง ไม่ใช่การทำนายผลรางวัล</div><div class="pick-grid" id="trPicks"></div><details class="method"><summary>วิธีคัดเลือก 10 เลข</summary><p id="trMethod"></p></details></section>
 <div class="two-col"><section class="card"><h2 class="section-title">หลักสิบ</h2><div class="sub-note" id="trTensSub"></div><div class="digit-chart" id="trTens"></div><div class="chart-note"><i></i>เส้นประ = ค่าที่คาดไว้ตามปกติ</div></section><section class="card"><h2 class="section-title">หลักหน่วย</h2><div class="sub-note" id="trUnitsSub"></div><div class="digit-chart" id="trUnits"></div><div class="chart-note"><i></i>เส้นประ = ค่าที่คาดไว้ตามปกติ</div></section></div>
 <section class="card"><h2 class="section-title">สัดส่วนเลข</h2><div class="sub-note" id="trSplitSub"></div><div class="splits-row" id="trSplits"></div></section>
-<section class="card"><h2 class="section-title">เลขที่น่าสนใจ</h2><div class="sub-note" id="trSumSub"></div><div id="trLists"></div></section>
+
+<section class="card number-check-card" aria-labelledby="numberCheckTitle">
+<h2 class="section-title" id="numberCheckTitle">ลองตรวจคะแนนเลขที่สนใจ</h2>
+<p class="sub-note">กรอกเลข 2 หลักที่ต้องการ ระบบจะคำนวณคะแนนจากสถิติย้อนหลังชุดเดียวกับ 10 เลขเด่น</p>
+<form class="number-check-form" id="numberCheckForm" novalidate>
+<label class="sr-only" for="numberCheckInput">กรอกเลข 2 หลัก</label>
+<input id="numberCheckInput" class="number-check-input" type="text" inputmode="numeric" autocomplete="off" maxlength="2" pattern="[0-9]{2}" placeholder="00–99" aria-describedby="numberCheckHint">
+<button class="number-check-button" type="submit">ดูคะแนน</button>
+</form>
+<div class="number-check-hint" id="numberCheckHint">ใส่เลข 2 หลัก แล้วกด “ดูคะแนน” หรือ Enter</div>
+<div class="number-check-result" id="numberCheckResult" aria-live="polite" hidden></div>
+<p class="number-check-disclaimer">คะแนนนี้เป็นเพียงการประเมินจากรูปแบบสถิติย้อนหลัง ไม่ใช่คำแนะนำในการซื้อสลาก และไม่สามารถบอกหรือรับประกันผลรางวัลในอนาคตได้</p>
+</section>
 <div class="note trend-note">สรุปจากสถิติย้อนหลังเพื่อศึกษาข้อมูลเท่านั้น ผลหวยแต่ละงวดสุ่มโดยอิสระ เลขที่ถูกคัดมาจึงไม่ได้เพิ่มโอกาสถูกรางวัล</div>
 </div>
 </div>
@@ -220,8 +258,8 @@ const cap=s=>s[0].toUpperCase()+s.slice(1);
 const yearBE=iso=>Number(iso.slice(0,4))+543;
 const bold=n=>`<b>${n}</b>`;
 const withYears=(rows,k=4)=>rows.slice(0,k).map(([d,n])=>`${bold(n)} (พ.ศ. ${yearBE(d)})`).join(', ')+(rows.length>k?` และอีก ${rows.length-k} ครั้ง`:'');
-const expect=v=>`ปกติคาดว่าประมาณ ${v.toFixed(1)} ครั้ง`;
-function pTag(p){return p<.05?['เด่นชัด','high']:p<.2?['ค่อนข้างเด่น','mid']:['อยู่ในเกณฑ์ปกติ','']}
+const pct=(k,n)=>n?`${(k/n*100).toFixed(1).replace(/\.0$/,'')}%`:'0%';
+const pTag=p=>p<.05?['เด่นชัด','high']:p<.2?['ค่อนข้างเด่น','mid']:['อยู่ในเกณฑ์ปกติ',''];
 function binomTail(n,p,k,upper){const q=1-p,pr=[Math.pow(q,n)];for(let i=1;i<=n;i++)pr.push(pr[i-1]*(n-i+1)/i*p/q);let s=0;for(let i=0;i<=n;i++){if(upper?i>=k:i<=k)s+=pr[i]}return Math.min(1,s)}
 const pAnyOf=(p,tests)=>1-Math.pow(1-p,tests);
 const isRun=n=>Math.abs(n[0]-n[1])===1, isDbl=n=>n[0]===n[1], rev=n=>n[1]+n[0];
@@ -234,48 +272,49 @@ function analyzeTrend(){
   win.forEach(([,n],i)=>{tens[+n[0]]++;units[+n[1]]++;cnt[n]++;if(!(n in first))first[n]=i});
   return {next,win,N,tens,units,cnt,first,odd:win.filter(([,n])=>+n%2===1).length,high:win.filter(([,n])=>+n>=50).length};
 }
-/* ---- ข้อสังเกต: ทุกข้อใส่เลขจริงเป็นตัวอย่าง และบอกหน่วย "ครั้ง" ---- */
+/* ---- ข้อสังเกต: ใช้จำนวนจริงและสัดส่วนจากชุดข้อมูลที่เลือก ---- */
 function digitObs(arr,place,idx,N,win){
-  const mean=N/10,max=Math.max(...arr),min=Math.min(...arr);
+  const max=Math.max(...arr),min=Math.min(...arr);
   const pHot=pAnyOf(binomTail(N,.1,max,true),10),pCold=pAnyOf(binomTail(N,.1,min,false),10);
   const digits=v=>arr.map((c,d)=>c===v?d:null).filter(x=>x!==null);
   const dl=ds=>ds.slice(0,3).join(', ')+(ds.length>3?` และอีก ${ds.length-3} ตัว`:'');
   if(pHot<=pCold){const ds=digits(max),ex=win.filter(([,n])=>ds.includes(+n[idx])).slice(0,3).map(r=>bold(r[1])).join(', ');
-    return {p:pHot,html:`${place}เป็นเลข ${bold(dl(ds))} บ่อยที่สุด ${max} ครั้งจาก ${N} งวด เช่น ${ex} (${expect(mean)})`}}
-  return {p:pCold,html:`${place}เป็นเลข ${bold(dl(digits(min)))} ${min===0?'ไม่เคยออกเลย':'ออกน้อยที่สุด '+min+' ครั้ง'}ใน ${N} งวด (${expect(mean)})`};
+    return {p:pHot,html:`${place}ที่พบมากที่สุดคือ ${bold(dl(ds))} ออก ${bold(max+' ครั้ง')} (${pct(max,N)})${ex?` เช่น ${ex}`:''}`}}
+  const ds=digits(min);
+  return {p:pCold,html:`${place}ที่พบน้อยที่สุดคือ ${bold(dl(ds))} ${min===0?'ยังไม่พบในชุดข้อมูลนี้':`ออก ${bold(min+' ครั้ง')} (${pct(min,N)})`}`};
 }
 function splitObs(k,N,aName,bName,predA,win){
-  const big=k>=N-k,kk=big?k:N-k,p=Math.min(1,2*binomTail(N,.5,kk,true));
-  const ex=win.filter(([,n])=>predA(n)===big).slice(0,3).map(r=>bold(r[1])).join(', ');
-  return {p,html:`${big?aName:bName} ออก ${bold(kk+' ครั้ง')}จาก ${N} งวด เช่น ${ex} · ${big?bName:aName} ออก ${N-kk} ครั้ง (${expect(N/2)}ต่อฝั่ง)`};
+  const other=N-k,big=k>=other,major=big?k:other,minor=big?other:k;
+  const p=Math.min(1,2*binomTail(N,.5,major,true));
+  return {p,html:`${aName} ${k} ครั้ง (${pct(k,N)}) · ${bName} ${other} ครั้ง (${pct(other,N)})`};
 }
 function prevObs(chron,N){
-  const pairs=N-1,mean=pairs*.1;let best=null;
+  const pairs=N-1;let best=null;
   [['หลักสิบ',0],['หลักหน่วย',1]].forEach(([place,idx])=>{
     let k=0,ex=null;
     for(let i=1;i<N;i++)if(chron[i][1][idx]===chron[i-1][1][idx]){k++;ex=[chron[i],chron[i-1]]}
-    const p=binomTail(pairs,.1,k,k>=mean);
-    if(!best||Math.abs(k-mean)>Math.abs(best.k-mean))best={place,idx,k,ex,p};
+    const p=binomTail(pairs,.1,k,k>=pairs*.1);
+    if(!best||Math.abs(k-pairs*.1)>Math.abs(best.k-pairs*.1))best={place,idx,k,ex,p};
   });
   const {place,idx,k,ex,p}=best;
-  const sample=ex?` เช่น พ.ศ. ${yearBE(ex[0][0])} ออก ${bold(ex[0][1])} และ พ.ศ. ${yearBE(ex[1][0])} ออก ${bold(ex[1][1])} ${place}เป็น ${ex[0][1][idx]} เหมือนกัน`:'';
-  return {p:pAnyOf(p,2),html:`${place}ซ้ำกับปีก่อนหน้า ${bold(k+' ครั้ง')}จาก ${pairs} คู่ปีติดกัน${sample} (${expect(mean)})`};
+  const sample=ex?` · ตัวอย่าง พ.ศ. ${yearBE(ex[0][0])} ${ex[0][1]} และ พ.ศ. ${yearBE(ex[1][0])} ${ex[1][1]} มี${place}เป็น ${ex[0][1][idx]} เหมือนกัน`:'';
+  return {p:pAnyOf(p,2),html:`${place}ซ้ำกับงวดปีก่อนหน้า ${k} จาก ${pairs} คู่ปี (${pct(k,pairs)})${sample}`};
 }
 function repeatObs(A){
   const {N,cnt,win}=A,rep=Object.keys(cnt).filter(n=>cnt[n]>=2).sort((a,b)=>cnt[b]-cnt[a]||a.localeCompare(b));
   if(rep.length){const mc=cnt[rep[0]];
-    const txt=rep.slice(0,3).map(n=>`${bold(n)} ออก ${cnt[n]} ครั้ง (พ.ศ. ${win.filter(r=>r[1]===n).map(r=>yearBE(r[0])).join(', ')})`).join(' · ');
-    return {p:pAnyOf(binomTail(N,.01,mc,true),100),html:`เลขที่ออกซ้ำ: ${txt}${rep.length>3?` และอีก ${rep.length-3} เลข`:''}`}}
+    const txt=rep.slice(0,3).map(n=>`${bold(n)} ออก ${cnt[n]} ครั้ง`).join(' · ');
+    return {p:pAnyOf(binomTail(N,.01,mc,true),100),html:`เลขที่ออกซ้ำในชุดนี้: ${txt}${rep.length>3?` · พบทั้งหมด ${rep.length} เลขจาก 100 เลข (${pct(rep.length,100)})`:''}`}}
   let pn=1;for(let i=0;i<N;i++)pn*=(100-i)/100;
-  return {p:pn,html:`ไม่มีเลขใดออกซ้ำเลยใน ${N} งวด (ออกต่างกันทั้ง ${N} ครั้ง)`};
+  return {p:pn,html:`ไม่พบเลขซ้ำเลย ทั้ง ${N} งวดเป็นคนละเลขกันทั้งหมด`};
 }
 function patternObs(A){
-  const {N,cnt,win}=A,out=[],tagNote=['น่าสนใจ','note'];
+  const {N,win}=A,out=[],tagNote=['น่าสนใจ','note'];
   const runs=win.filter(([,n])=>isRun(n)),dbls=win.filter(([,n])=>isDbl(n));
-  if(runs.length)out.push({tag:tagNote,html:`เลขเรียง (สองหลักต่างกัน 1) ออก ${bold(runs.length+' ครั้ง')}จาก ${N} งวด ได้แก่ ${withYears(runs)} (${expect(N*.18)})`});
-  if(dbls.length)out.push({tag:tagNote,html:`เลขเบิ้ล (สองหลักเหมือนกัน) ออก ${bold(dbls.length+' ครั้ง')}จาก ${N} งวด ได้แก่ ${withYears(dbls)} (${expect(N*.1)})`});
-  const pairs=revPairs(cnt);
-  if(pairs.length)out.push({tag:tagNote,html:`เลขกลับ (สลับหลักสิบกับหลักหน่วย) ออกครบทั้งคู่ ${bold(pairs.length+' คู่')} ได้แก่ ${pairs.map(([a,b])=>bold(a+' ↔ '+b)).join(', ')}`});
+  if(runs.length)out.push({tag:tagNote,html:`เลขเรียง (สองหลักต่างกัน 1) พบ ${runs.length} ครั้ง (${pct(runs.length,N)}) ได้แก่ ${withYears(runs)}`});
+  if(dbls.length)out.push({tag:tagNote,html:`เลขเบิ้ล (สองหลักเหมือนกัน) พบ ${dbls.length} ครั้ง (${pct(dbls.length,N)}) ได้แก่ ${withYears(dbls)}`});
+  const pairs=revPairs(A.cnt);
+  if(pairs.length)out.push({tag:tagNote,html:`เลขกลับ (สลับหลักสิบกับหลักหน่วย) พบครบทั้งคู่ ${pairs.length} คู่ ได้แก่ ${pairs.map(([a,b])=>bold(a+' ↔ '+b)).join(', ')}`});
   return out;
 }
 function revPairs(cnt){return Object.keys(cnt).filter(n=>cnt[n]>0&&!isDbl(n)&&cnt[rev(n)]>0&&n<rev(n)).map(n=>[n,rev(n)])}
@@ -288,12 +327,19 @@ function buildObservations(A){
   return notable.concat(patternObs(A),rest).slice(0,5);
 }
 /* ---- 10 เลขเด่น ---- */
+function scoreNumber(A,n){
+  const {N,tens,units,cnt,first}=A;
+  const maxT=Math.max(...tens)||1,maxU=Math.max(...units)||1,maxC=Math.max(...Object.values(cnt))||1;
+  const a=+n[0],b=+n[1],rec=n in first?1-first[n]/N:0;
+  return {score:.5*((tens[a]/maxT+units[b]/maxU)/2)+.3*(cnt[n]/maxC)+.2*rec,
+    tensCount:tens[a],unitsCount:units[b],drawCount:cnt[n],lastIndex:first[n]};
+}
 function buildPicks(A){
   const {N,tens,units,cnt,first,win}=A,maxT=Math.max(...tens)||1,maxU=Math.max(...units)||1,maxC=Math.max(...Object.values(cnt))||1;
   const thr=arr=>[...arr].sort((a,b)=>b-a)[2],tT=thr(tens),tU=thr(units),mean=N/10;
   return Object.keys(cnt).map(n=>{
     const a=+n[0],b=+n[1],rec=n in first?1-first[n]/N:0;
-    return {n,a,b,rec,score:.5*((tens[a]/maxT+units[b]/maxU)/2)+.3*(cnt[n]/maxC)+.2*rec};
+    return {n,a,b,rec,score:scoreNumber(A,n).score};
   }).sort((x,y)=>y.score-x.score||y.rec-x.rec||x.n.localeCompare(y.n)).slice(0,10).map(p=>{
     const why=[];
     if(tens[p.a]>=tT&&tens[p.a]>mean)why.push(`หลักสิบ ${p.a} ออก ${tens[p.a]} ครั้ง`);
@@ -309,28 +355,7 @@ function digitChart(id,arr,N){
 }
 function splitBar(label,aName,bName,a,N){
   const b=N-a,pa=N?a/N*100:0;
-  return `<div class="split"><div class="split-top"><span>${aName} — ${a} ครั้ง</span><span>${bName} — ${b} ครั้ง</span></div><div class="split-bar" role="img" aria-label="${label}: ${aName} ${a} ครั้ง ${bName} ${b} ครั้ง"><span class="split-a" style="width:${pa}%"></span><span class="split-b" style="width:${100-pa}%"></span></div></div>`;
-}
-/* ---- บทสรุป: จัดกลุ่มเลข แล้วโยงกับ 10 เลขเด่น ---- */
-function renderSummary(A,picks,dm){
-  const {N,cnt,win,first}=A,pickRank={};picks.forEach((p,i)=>pickRank[p.n]=i);
-  const star=n=>n in pickRank,chip=(n,sub)=>`<span class="nchip${star(n)?' pick':''}">${n}${sub?` <small>${sub}</small>`:''}</span>`;
-  const seen=n=>win.filter(r=>r[1]===n);
-  const distinct=f=>[...new Set(win.map(r=>r[1]).filter(f))];
-  const rep=Object.keys(cnt).filter(n=>cnt[n]>=2).sort((a,b)=>cnt[b]-cnt[a]||a.localeCompare(b));
-  const runs=distinct(isRun),dbls=distinct(isDbl),pairs=revPairs(cnt);
-  const groups=[];
-  if(rep.length)groups.push(['เลขที่ออกซ้ำ',rep.map(n=>chip(n,cnt[n]+' ครั้ง')).join('')]);
-  if(runs.length)groups.push(['เลขเรียงที่เคยออก',runs.map(n=>chip(n)).join('')]);
-  if(dbls.length)groups.push(['เลขเบิ้ลที่เคยออก',dbls.map(n=>chip(n)).join('')]);
-  if(pairs.length)groups.push(['เลขกลับที่ออกครบทั้งคู่',pairs.map(([a,b])=>`<span class="nchip${star(a)||star(b)?' pick':''}">${a} ↔ ${b}</span>`).join('')]);
-  const labels={};const add=(n,t)=>{(labels[n]=labels[n]||[]).push(t)};
-  rep.forEach(n=>add(n,'ออกซ้ำ'));runs.forEach(n=>add(n,'เลขเรียง'));dbls.forEach(n=>add(n,'เลขเบิ้ล'));
-  pairs.forEach(([a,b])=>{add(a,`กลับกับ ${b} ที่เคยออก`);add(b,`กลับกับ ${a} ที่เคยออก`)});
-  const both=picks.filter(p=>labels[p.n]).sort((x,y)=>labels[y.n].length-labels[x.n].length||pickRank[x.n]-pickRank[y.n]);
-  const concl=both.length?`เลขเด่นที่มีลักษณะข้างต้นด้วย: ${both.slice(0,6).map(p=>`${bold(p.n)} (${labels[p.n].join(' · ')})`).join(', ')}`:`ไม่มีเลขใน 10 เลขเด่นที่ตรงกับลักษณะข้างต้น`;
-  $('trSumSub').textContent=`จัดกลุ่มเลขที่เคยออกในงวดวันที่ ${dm} ให้อ่านง่ายขึ้น และโยงกับ 10 เลขเด่นด้านบน (★ = เป็นหนึ่งใน 10 เลขเด่นด้วย)`;
-  $('trLists').innerHTML=(groups.length?`<div class="grp-grid">${groups.map(([t,c])=>`<div class="grp"><div class="grp-title">${t}</div><div class="grp-chips">${c}</div></div>`).join('')}</div>`:'<div class="sub-note">ไม่พบเลขซ้ำ เลขเรียง เลขเบิ้ล หรือเลขกลับในชุดข้อมูลนี้</div>')+`<div class="sum-box"><b>สรุป</b> ${concl}</div><div class="chart-note">จัดกลุ่มเพื่อให้อ่านข้อมูลง่ายขึ้น ไม่ได้หมายความว่าเลขกลุ่มไหนมีโอกาสออกมากหรือน้อยกว่ากัน</div>`;
+  return `<div class="split"><div class="split-top"><span>${aName} — ${a} ครั้ง (${pct(a,N)})</span><span>${bName} — ${b} ครั้ง (${pct(b,N)})</span></div><div class="split-bar" role="img" aria-label="${label}: ${aName} ${a} ครั้ง ${bName} ${b} ครั้ง"><span class="split-a" style="width:${pa}%"></span><span class="split-b" style="width:${100-pa}%"></span><span class="split-ratio" style="--split-at:${pa}%">${a} : ${b}</span></div></div>`;
 }
 function renderTrend(){
   const A=analyzeTrend();
@@ -339,19 +364,41 @@ function renderTrend(){
   $('trWinTitle').textContent=`เลขท้าย 2 ตัว ${N} งวดวันที่ ${dm}`;
   $('trWinSub').textContent=`งวดวันที่ ${dm} ในปีก่อน ๆ ตรงกับงวดถัดไป · พ.ศ. ${yearBE(oldest)} – ${yearBE(newest)} · เรียงจากปีล่าสุด`;
   $('trChips').innerHTML=win.map(([d,n],i)=>`<div class="draw-chip${i===0?' latest':''}"><span class="dc-num">${n}</span><span class="dc-date">พ.ศ. ${yearBE(d)}</span></div>`).join('');
+  $('trTagLead').textContent=`ป้ายท้ายแต่ละข้อบอกว่าพบลักษณะนั้นบ่อยหรือแตกต่างจากรูปแบบสุ่มแค่ไหน โดยคำนวณจากผลย้อนหลัง ${N} งวด ไม่ได้บอกว่าเลขนั้นดีหรือไม่ดี`;
+  $('trTagLead').textContent=`ป้ายท้ายแต่ละข้อบอกว่าพบลักษณะนั้นบ่อยหรือแตกต่างจากรูปแบบสุ่มแค่ไหน โดยคำนวณจากผลย้อนหลัง ${N} งวด ไม่ได้บอกว่าเลขนั้นดีหรือไม่ดี`;
   $('trObs').innerHTML=buildObservations(A).map((o,i)=>{const [t,c]=o.tag||pTag(o.p);return `<li class="obs-item"><span class="obs-no">${i+1}</span><span class="obs-text">${o.html}</span><span class="obs-tag ${c}">${t}</span></li>`}).join('');
   const picks=buildPicks(A);
   $('trPickTitle').textContent=`10 เลขเด่นจากงวดวันที่ ${dm} (${N} งวด)`;
   $('trPicks').innerHTML=picks.map((p,i)=>`<div class="pick"><div class="pick-rank">อันดับ ${i+1}</div><div class="pick-num">${p.n}</div><div class="pick-why">${p.why.length?p.why.map(w=>`<span>${w}</span>`).join(''):'<span>คะแนนรวมสูง</span>'}</div></div>`).join('');
-  $('trMethod').textContent=`คะแนนรวมของแต่ละเลข 00–99 = 50% ความเด่นของหลัก (หลักสิบและหลักหน่วยของเลขนั้น เทียบกับหลักที่ออกบ่อยที่สุดใน ${N} งวด) + 30% จำนวนครั้งที่เลขนั้นออก + 20% ความใหม่ (ออกใกล้ปีล่าสุดได้คะแนนมากกว่า) ถ้าคะแนนเท่ากันเรียงตามความใหม่ แล้วตามเลขน้อยไปมาก`;
+  $('trMethod').textContent=`คะแนนรวมของแต่ละเลข 00–99 = 50% ความเด่นของหลัก (หลักสิบและหลักหน่วยของเลขนั้น เทียบกับหลักที่ออกบ่อยที่สุดในชุดข้อมูล) + 30% จำนวนครั้งที่เลขนั้นออก + 20% ความใหม่ (ออกใกล้ปีล่าสุดได้คะแนนมากกว่า) ถ้าคะแนนเท่ากันเรียงตามความใหม่ แล้วตามเลขน้อยไปมาก`;
   const ex=win[0][1];
-  $('trTensSub').textContent=`เช่น ${ex} → หลักสิบคือ ${ex[0]} · ตัวเลขเหนือแท่ง = จำนวนครั้ง (นับจาก ${N} งวด)`;
-  $('trUnitsSub').textContent=`เช่น ${ex} → หลักหน่วยคือ ${ex[1]} · ตัวเลขเหนือแท่ง = จำนวนครั้ง (นับจาก ${N} งวด)`;
+  $('trTensSub').textContent=`เช่น ${ex} → หลักสิบคือ ${ex[0]} · ตัวเลขเหนือแท่ง = จำนวนครั้ง`;
+  $('trUnitsSub').textContent=`เช่น ${ex} → หลักหน่วยคือ ${ex[1]} · ตัวเลขเหนือแท่ง = จำนวนครั้ง`;
   digitChart('trTens',tens,N);digitChart('trUnits',units,N);
-  $('trSplitSub').textContent=`นับจาก ${N} งวด · เส้นประตรงกลาง = สัดส่วน 50 : 50`;
+  $('trSplitSub').textContent=`สัดส่วนของเลขคู่–คี่ และเลขต่ำ–สูง จากผลย้อนหลัง ${N} งวด`;
   $('trSplits').innerHTML=splitBar('คู่-คี่','เลขคู่','เลขคี่',N-A.odd,N)+splitBar('ต่ำ-สูง','เลขต่ำ (00–49)','เลขสูง (50–99)',N-A.high,N);
-  renderSummary(A,picks,dm);
 }
+function evaluateEnteredNumber(raw){
+  const result=$('numberCheckResult'),n=String(raw||'').trim();
+  if(!/^\d{2}$/.test(n)){
+    result.hidden=false;result.innerHTML='<div class="ncr-detail">กรุณากรอกตัวเลข 2 หลัก ตั้งแต่ 00–99</div>';return;
+  }
+  const A=analyzeTrend();
+  if(!A){result.hidden=false;result.innerHTML='<div class="ncr-detail">ยังไม่มีข้อมูลย้อนหลังเพียงพอสำหรับคำนวณคะแนน</div>';return;}
+  const metric=scoreNumber(A,n),all=Object.keys(A.cnt).map(num=>({n:num,...scoreNumber(A,num)}))
+    .sort((a,b)=>b.score-a.score||(a.lastIndex??Infinity)-(b.lastIndex??Infinity)||a.n.localeCompare(b.n));
+  const rank=all.findIndex(x=>x.n===n)+1,score=Math.round(metric.score*1000)/10;
+  const freq=metric.drawCount?`เคยออก ${metric.drawCount} ครั้งใน ${A.N} งวดล่าสุดที่ใช้วิเคราะห์`:`ยังไม่พบใน ${A.N} งวดที่ใช้วิเคราะห์`;
+  const last=metric.lastIndex!==undefined?` · พบล่าสุดในชุดข้อมูล พ.ศ. ${yearBE(A.win[metric.lastIndex][0])}`:'';
+  result.hidden=false;
+  result.innerHTML=`<div class="ncr-top"><div class="ncr-number">${n}</div><div><div class="ncr-score">${score.toFixed(1)}<span style="font-size:13px;font-weight:600;color:#6e6e73"> / 100</span></div><div class="ncr-label">คะแนนตามสูตรเดียวกับ 10 เลขเด่น · อันดับ ${rank} จาก 100 เลข</div></div></div><div class="ncr-track" role="img" aria-label="คะแนน ${score} จาก 100"><span style="width:${score}%"></span></div><div class="ncr-detail">${freq}${last}</div>`;
+}
+$('numberCheckForm').addEventListener('submit',e=>{
+  e.preventDefault();evaluateEnteredNumber($('numberCheckInput').value);
+});
+$('numberCheckInput').addEventListener('input',e=>{
+  e.target.value=e.target.value.replace(/\D/g,'').slice(0,2);
+});
 function setView(next,opts={}){
   if(next===currentView)return;
   const from=$('view'+cap(currentView)),to=$('view'+cap(next)),dir=VIEWS.indexOf(next)>VIEWS.indexOf(currentView)?1:-1,token=++switchToken;
