@@ -1,4 +1,4 @@
-const CACHE_NAME = 'lottolab-design-v34';
+const CACHE_NAME = 'lottolab-design-v35';
 const ASSETS = [
   './',
   './index.html',
